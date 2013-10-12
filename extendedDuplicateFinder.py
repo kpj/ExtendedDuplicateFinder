@@ -33,6 +33,9 @@ def gen_parser(cmd):
 			help = 'Check for duplicate %ss' % k
 		)
 
+def remove_item(item, lib):
+	lib.remove(item, delete = True, with_album = True)
+
 def dupl_finder(lib, opts, args):
 	res = check_key(gen_keylist(vars(opts)), lib.items(query = args))
 	for key, match_list in res.iteritems():
