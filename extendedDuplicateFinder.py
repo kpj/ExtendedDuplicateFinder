@@ -1,7 +1,6 @@
 from beets.plugins import BeetsPlugin
 from beets.ui import Subcommand
-from beets.library import Item, Album
-from pprint import pprint
+from beets.library import Item
 
 
 # helper functions
