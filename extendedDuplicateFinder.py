@@ -3,8 +3,12 @@ from beets.ui import Subcommand
 from beets.library import Item
 
 
-# helper functions
+####################
+# Helper Functions #
+####################
+
 def check_key(key_list, items):
+	""" Creates dictionary which contains the matching attributes (as the key) and a list of the concerned items (as the value) """
 	matches = {}
 	for i in items:
 		res = []
@@ -18,6 +22,7 @@ def check_key(key_list, items):
 	return matches
 
 def gen_keylist(opts):
+	""" Generates list of all Item() attributes """
 	out = []
 	for k in Item().keys():
 		if k in opts and opts[k]:
@@ -25,6 +30,7 @@ def gen_keylist(opts):
 	return out
 
 def gen_parser(cmd):
+	""" Creates cmdline argument parser which contains each Item() attribute and a couple of additional parameters """
 	for k in Item().keys():
 		cmd.parser.add_option(
 			'--%s' % k,
@@ -34,9 +40,11 @@ def gen_parser(cmd):
 		)
 
 def remove_item(item, lib):
+	""" Erases specified item from database and disk """
 	lib.remove(item, delete = True, with_album = True)
 
 def dupl_finder(lib, opts, args):
+	""" Lists and possibly deletes duplicates """
 	res = check_key(gen_keylist(vars(opts)), lib.items(query = args))
 	for key, match_list in res.iteritems():
 		if len(match_list) > 1:
@@ -45,14 +53,21 @@ def dupl_finder(lib, opts, args):
 				print "%s - %s - %s" % (match["title"], match["artist"], match["album"])
 			print ""
 
-# declare command
+
+#######################
+# Command Declaration #
+#######################
+
 find_command = Subcommand('find_duplicates', help = 'Lists all duplicates for given query', aliases = ["fdup"])
 find_command.func = dupl_finder
 
-# set option parser
 gen_parser(find_command)
 
-# actual plugin
+
+#####################
+# Plugin Definition #
+#####################
+
 class ExtendedDuplicateFinder(BeetsPlugin):
 	def commands(self):
 		return [find_command]
