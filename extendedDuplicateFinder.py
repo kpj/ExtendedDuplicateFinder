@@ -31,6 +31,14 @@ def gen_keylist(opts):
 
 def gen_parser(cmd):
 	""" Creates cmdline argument parser which contains each Item() attribute and a couple of additional parameters """
+
+	cmd.parser.add_option(
+		'--delete',
+		dest = 'actually_delete_files',
+		action = 'store_true',
+		help = 'Not only list, but actually erase items from database and disk'
+	)
+
 	for k in Item().keys():
 		cmd.parser.add_option(
 			'--%s' % k,
