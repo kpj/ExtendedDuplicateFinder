@@ -7,6 +7,12 @@ from beets.library import Item
 # Helper Functions #
 ####################
 
+def force_unicode(s):
+	""" Forces returned string to be unicode """
+	if isinstance(s, str):
+		return s.decode("utf8")
+	return s
+
 def check_key(key_list, items):
 	""" Creates dictionary which contains the matching attributes (as the key) and a list of the concerned items (as the value) """
 	matches = {}
@@ -14,8 +20,8 @@ def check_key(key_list, items):
 		matches.setdefault(
 				"-".join(
 					[str(i[key]) 
-						if isinstance(i[key], (int, long, float, complex)) 
-						else i[key].encode('utf8') 
+						if i[key] == None or isinstance(i[key], (int, long, float, complex)) 
+						else force_unicode(i[key])
 						for key in key_list
 					]
 				), []
@@ -24,7 +30,7 @@ def check_key(key_list, items):
 
 def gen_keylist(opts):
 	""" Generates list of all Item() attributes """
-	return [k for k in Item().keys() if k in opts and opts[k]]
+	return [k for k in Item().keys() if (k in opts and opts[k]) or opts["compare_all"]]
 
 def gen_parser(cmd):
 	""" Creates cmdline argument parser which contains each Item() attribute and a couple of additional parameters """
@@ -33,6 +39,12 @@ def gen_parser(cmd):
 		dest = 'actually_delete_files',
 		action = 'store_true',
 		help = 'Not only list, but actually erase items from database and disk'
+	)
+	cmd.parser.add_option(
+		'--all',
+		dest = 'compare_all',
+		action = 'store_true',
+		help = 'Compares all available options, i.e. only finds exact matches'
 	)
 
 	for k in Item().keys():
