@@ -71,6 +71,16 @@ def gen_parser(cmd):
                'exact matches (takes precedence over --negate)'
     )
 
+    cmd.parser.add_option(
+        '-f',
+        '--output_format',
+        dest='output_format',
+        action='store',
+        type='string',
+        help='Print with custom format',
+        metavar='FORMAT'
+    )
+
     for k in Item().keys():
         cmd.parser.add_option(
             '--%s' % k,
@@ -87,16 +97,19 @@ def remove_item(item, lib):
 def dupl_finder(lib, opts, args):
     """Lists and possibly deletes duplicates
     """
-    res = check_key(gen_keylist(vars(opts)), lib.items(query = args))
+    opts = vars(opts)
+
+    if opts["output_format"]:
+        fmt = opts["output_format"]
+    else:
+        fmt = '$albumartist - $album - $title'
+
+    res = check_key(gen_keylist(opts), lib.items(query = args))
     for key, match_list in res.iteritems():
         if len(match_list) > 1:
             # found duplicates
             for match in match_list:
-                print "%s - %s - %s" % (
-                        match["title"], 
-                        match["artist"],
-                        match["album"]
-                    )
+                print_obj(match, lib, fmt=fmt)
             print ""
 
 
