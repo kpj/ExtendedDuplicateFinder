@@ -1,5 +1,5 @@
 from beets.plugins import BeetsPlugin
-from beets.ui import Subcommand
+from beets.ui import Subcommand, print_obj
 from beets.library import Item
 
 
@@ -16,7 +16,7 @@ def force_unicode(s):
 
 def check_key(key_list, items):
     """Creates dictionary which contains the matching attributes
-		(as the key) and a list of the concerned items (as the value)
+    (as the key) and a list of the concerned items (as the value)
     """
     matches = {}
     for i in items:
@@ -25,8 +25,8 @@ def check_key(key_list, items):
                     [
                         str(i[key]) 
                         if i[key] == None or isinstance(
-													i[key], (int, long, float, complex)
-												)
+                            i[key], (int, long, float, complex)
+                        )
                         else force_unicode(i[key])
                         for key in key_list
                     ]
@@ -46,29 +46,29 @@ def gen_keylist(opts):
 
 def gen_parser(cmd):
     """Creates cmdline argument parser which contains each Item()
-		attribute and a couple of additional parameters
+    attribute and a couple of additional parameters
     """
     cmd.parser.add_option(
         '--delete',
         dest = 'actually_delete_files',
         action = 'store_true',
         help = 'Not only list, but actually erase items '
-				'from database and disk'
+               'from database and disk'
     )
     cmd.parser.add_option(
         '--negate',
         dest = 'negate_all_options',
         action = 'store_true',
         help = 'Negate all passed options, e.g. "--title --negate" '
-				'would compare everything but the title '
-				'(has no effect with --all)'
+               'would compare everything but the title '
+               '(has no effect with --all)'
     )
     cmd.parser.add_option(
         '--all',
         dest = 'compare_all',
         action = 'store_true',
         help = 'Compares all available options, i.e. only finds '
-				'exact matches (takes precedence over --negate)'
+               'exact matches (takes precedence over --negate)'
     )
 
     for k in Item().keys():
