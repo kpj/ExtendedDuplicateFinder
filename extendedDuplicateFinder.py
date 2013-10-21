@@ -81,6 +81,14 @@ def gen_parser(cmd):
         metavar='FORMAT'
     )
 
+    cmd.parser.add_option(
+        '-c',
+        '--count',
+        dest='output_count',
+        action='store_true',
+        help='count duplicate tracks or albums'
+    )
+
     for k in Item().keys():
         cmd.parser.add_option(
             '--%s' % k,
@@ -99,17 +107,29 @@ def dupl_finder(lib, opts, args):
     """
     opts = vars(opts)
 
+    # handle special printing formats
     if opts["output_format"]:
         fmt = opts["output_format"]
     else:
         fmt = '$albumartist - $album - $title'
+    if opts["output_count"]:
+        fmt += ": ({0})"
 
-    res = check_key(gen_keylist(opts), lib.items(query = args))
+    key_list = gen_keylist(opts)
+    if len(key_list) == 0:
+        # no option set, setting default one
+        key_list = ['title', 'artist', 'album']
+
+    res = check_key(key_list, lib.items(query = args))
     for key, match_list in res.iteritems():
-        if len(match_list) > 1:
+        num = len(match_list)
+        if num > 1:
             # found duplicates
-            for match in match_list:
-                print_obj(match, lib, fmt=fmt)
+            if opts["output_count"]:
+                print_obj(match_list[0], lib, fmt=fmt.format(num))
+            else:
+                for match in match_list:
+                    print_obj(match, lib, fmt=fmt.format(num))
             print ""
 
 
