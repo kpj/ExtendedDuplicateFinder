@@ -86,7 +86,8 @@ def gen_parser(cmd):
         '--count',
         dest='output_count',
         action='store_true',
-        help='count duplicate tracks or albums'
+        help='Count duplicate tracks or albums '
+				'instead of displaying all of them'
     )
 
     for k in Item().keys():
